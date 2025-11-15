@@ -1,0 +1,11 @@
+# File: config/wifi_config.yaml
+# Placeholder Wi‑Fi monitoring configuration
+
+interface: wlan0           # Wi‑Fi interface name on Jetson
+poll_interval_sec: 1.0     # Timer interval for RSSI polling
+
+targets:
+  # Optional filters; leave empty to log all visible networks
+  ssids: []                # e.g., ["MySSID", "MeshNet"]
+  bssids: []               # e.g., ["00:11:22:33:44:55"]
+
