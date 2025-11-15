@@ -4,22 +4,6 @@ My First WiFi Scanner
 =====================
 This script scans for WiFi networks and displays their signal strength (RSSI).
 
-What it does:
-1. Listens for WiFi beacon frames (routers broadcasting "I'm here!")
-2. Extracts the network name (SSID)
-3. Extracts the signal strength (RSSI in dBm)
-4. Prints the results
-
-IMPORTANT:
-- Requires sudo/root permissions
-- Requires WiFi adapter in monitor mode
-- Works on Linux/Jetson only (not macOS)
-
-NOTE: If you see IDE warnings about "scapy" imports:
-- These are false warnings!
-- Scapy is installed in the venv (virtual environment)
-- The code will run fine when you activate venv and run it
-- To fix IDE warnings, configure your IDE to use: venv/bin/python
 """
 
 # Import scapy for WiFi packet capture
@@ -32,7 +16,6 @@ except ImportError:
     print("Or activate venv: source venv/bin/activate")
     exit(1)
 
-# Color codes for terminal output (makes it pretty!)
 GREEN = '\033[92m'
 YELLOW = '\033[93m'
 RED = '\033[91m'
@@ -67,10 +50,8 @@ def packet_handler(packet):
     We only care about beacon frames (routers announcing themselves).
     """
 
-    # Check if this packet is a WiFi beacon frame
     if packet.haslayer(Dot11Beacon):
 
-        # Extract the network name (SSID)
         try:
             ssid = packet.info.decode('utf-8', errors='ignore')
             if not ssid:  # Hidden network
@@ -78,25 +59,20 @@ def packet_handler(packet):
         except:
             ssid = "<Unknown>"
 
-        # Extract the router's MAC address (BSSID)
         bssid = packet.addr2
 
         # Extract the signal strength (RSSI)
-        # This is in the RadioTap header
         try:
-            # Try to get RSSI from RadioTap header
+
             if packet.haslayer(RadioTap):
                 rssi = packet.dBm_AntSignal
                 quality = get_signal_quality(rssi)
 
-                # Print the result
                 print(f"Network: {ssid:25s} | BSSID: {bssid} | RSSI: {rssi:3d} dBm | Quality: {quality}")
             else:
-                # No RadioTap header (shouldn't happen in monitor mode)
                 print(f"Network: {ssid:25s} | BSSID: {bssid} | RSSI: N/A")
 
         except AttributeError:
-            # Some packets don't have RSSI info
             print(f"Network: {ssid:25s} | BSSID: {bssid} | RSSI: N/A")
 
 def main():
@@ -125,16 +101,10 @@ def main():
     print("="*80)
     print()
 
-    # The WiFi interface name (usually wlan0, wlan1, etc.)
-    # IMPORTANT: This interface must be in MONITOR MODE
     interface = "wlan0"
 
     try:
-        # Start sniffing WiFi packets
-        # iface = which WiFi adapter to use
-        # prn = function to call for each packet (our packet_handler)
-        # timeout = how long to scan (30 seconds)
-        # store = don't store packets in memory (saves RAM)
+
         sniff(
             iface=interface,
             prn=packet_handler,
