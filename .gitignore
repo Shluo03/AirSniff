@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# ROS 2
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+*.egg-info/
+.colcon/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs and Data
+logs/*.csv
+logs/*.log
+*.pcap
+*.cap
+
+# Test outputs
+.pytest_cache/
+.coverage
+htmlcov/
+*.prof
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# System
+.env
+.env.local
+*.pem
+*.key
+
+# Compiled
+*.pyc
+*.pyo
+build/
+dist/

@@ -1,16 +1,343 @@
-# Minimal Python deps for development (ROS 2 often provides these via apt)
-# NOTE: For ROS 2 environments, prefer installing via apt/rosdep.
+# AirSniff - WiFi RF Heatmap Project
+# Single unified requirements file for all platforms
+# ==================================================
+# Each team member installs what they need from this file
+# Jetson: Install all Core + WiFi sections
+# macOS/Desktop Dev: Install all sections for development
+# ==================================================
 
-rclpy
-numpy
-PyYAML
+# ============================================================================
+# CORE DEPENDENCIES - Required for all platforms
+# ============================================================================
 
-# TODO: image handling; install per-platform if needed
-# opencv-python
+# WiFi Monitoring (wifi_monitor package) - REQUIRED
+scapy>=2.5.0          # 802.11 packet capture and RadioTap parsing
+pandas>=2.0.0         # Data aggregation and time-series processing
+numpy>=1.24.0         # Numerical operations and RSSI averaging
+PyYAML>=6.0           # Configuration file parsing
 
-# TODO: ROS 2 launch packages (usually from ROS distro, not pip)
-# launch
-# launch_ros
+# ============================================================================
+# ROS 2 DEPENDENCIES - Install via apt, NOT pip (see note below)
+# ============================================================================
+# NOTE: DO NOT install these via pip on Jetson/ROS systems!
+# On Jetson/Linux with ROS 2:
+#   sudo apt install ros-humble-rclpy ros-humble-std-msgs
+#
+# For development WITHOUT ROS 2 installed, uncomment these:
+# rclpy>=3.0.0
+# std_msgs
+# geometry_msgs
 
-# NOTE: pycuVSLAM is installed separately following NVIDIA instructions.
+# ============================================================================
+# VISUALIZATION - For post-processing and heatmap generation
+# ============================================================================
+
+matplotlib>=3.7.0     # 2D plotting and heatmap visualization
+seaborn>=0.12.0       # Statistical plots and enhanced styling
+plotly>=5.14.0        # Interactive 3D heatmaps
+scipy>=1.10.0         # Interpolation algorithms (IDW, kriging, cubic)
+
+# ============================================================================
+# DEVELOPMENT TOOLS - Optional, for code quality
+# ============================================================================
+
+# Testing
+pytest>=7.0.0         # Unit testing framework
+pytest-cov>=4.0.0     # Code coverage reporting
+
+# Code Quality
+black>=23.0.0         # Code formatter (PEP 8)
+pylint>=2.15.0        # Code linter and static analysis
+flake8>=6.0.0         # Style guide enforcement
+mypy>=1.0.0           # Static type checking
+
+# ============================================================================
+# SYSTEM UTILITIES - Optional, for monitoring and debugging
+# ============================================================================
+
+psutil>=5.9.0         # System resource monitoring (CPU, memory, network)
+
+# ============================================================================
+# JUPYTER - Optional, for data analysis and experimentation
+# ============================================================================
+
+jupyter>=1.0.0        # Jupyter notebook environment
+ipython>=8.0.0        # Enhanced Python shell
+notebook>=7.0.0       # Jupyter notebook server
+jupyterlab>=4.0.0     # Modern Jupyter interface
+
+# ============================================================================
+# DATA EXPORT/IMPORT - For saving and sharing heatmap data
+# ============================================================================
+
+openpyxl>=3.1.0       # Excel file support (.xlsx)
+xlsxwriter>=3.1.0     # Enhanced Excel writing
+h5py>=3.9.0           # HDF5 file format (large datasets)
+netCDF4>=1.6.0        # NetCDF format (geospatial data)
+zarr>=2.16.0          # Cloud-optimized array storage
+
+# ============================================================================
+# GEOSPATIAL - For GPS coordinates and mapping (if using GPS)
+# ============================================================================
+
+# Uncomment if you need GPS/geospatial features:
+# geopandas>=0.14.0     # Geospatial data analysis
+# shapely>=2.0.0        # Geometric operations
+# folium>=0.15.0        # Interactive maps
+# pyproj>=3.6.0         # Coordinate transformations
+
+# ============================================================================
+# MACHINE LEARNING - Optional, for advanced RF prediction
+# ============================================================================
+
+# Uncomment if implementing ML-based RSSI prediction:
+# scikit-learn>=1.3.0   # ML algorithms (regression, clustering)
+# tensorflow>=2.13.0    # Deep learning (GPU support)
+# torch>=2.0.0          # PyTorch (alternative to TensorFlow)
+# joblib>=1.3.0         # Model serialization
+
+# ============================================================================
+# SIGNAL PROCESSING - Advanced RF analysis
+# ============================================================================
+
+# Already included: scipy (has signal processing)
+# Additional specialized tools:
+# pywavelets>=1.4.0     # Wavelet transforms
+# spectrum>=0.8.1       # Spectral analysis
+
+# ============================================================================
+# NETWORKING & PROTOCOL ANALYSIS
+# ============================================================================
+
+# Already included: scapy (comprehensive)
+# Additional tools:
+netifaces>=0.11.0     # Network interface information
+pyshark>=0.6          # Alternative packet analyzer (Wireshark wrapper)
+
+# ============================================================================
+# PERFORMANCE & PROFILING
+# ============================================================================
+
+cython>=3.0.0         # C extensions for performance
+numba>=0.58.0         # JIT compiler for numerical functions
+line-profiler>=4.1.0  # Line-by-line profiling
+
+# ============================================================================
+# LOGGING & MONITORING
+# ============================================================================
+
+loguru>=0.7.0         # Enhanced logging
+tqdm>=4.66.0          # Progress bars
+rich>=13.5.0          # Beautiful terminal output
+
+# ============================================================================
+# CONFIGURATION & VALIDATION
+# ============================================================================
+
+pydantic>=2.4.0       # Data validation and settings management
+python-dotenv>=1.0.0  # Environment variable management
+jsonschema>=4.19.0    # JSON schema validation
+
+# ============================================================================
+# DATABASE - For storing large datasets
+# ============================================================================
+
+# SQLite is built into Python, but for advanced features:
+# sqlalchemy>=2.0.0     # SQL toolkit and ORM
+# sqlite3              # Built-in (no install needed)
+
+# ============================================================================
+# 3D VISUALIZATION - Advanced heatmap rendering
+# ============================================================================
+
+# Already included: plotly (has 3D support)
+# Additional options:
+# mayavi>=4.8.0         # 3D scientific visualization (requires VTK)
+# pyvista>=0.42.0       # 3D plotting and mesh analysis
+# open3d>=0.18.0        # 3D data processing
+
+# ============================================================================
+# IMAGE PROCESSING - For floor plan overlay
+# ============================================================================
+
+pillow>=10.0.0        # Image manipulation (PNG, JPG)
+# opencv-python>=4.8.0  # Advanced image processing (use system OpenCV on Jetson)
+
+# ============================================================================
+# DOCUMENTATION GENERATION
+# ============================================================================
+
+sphinx>=7.2.0         # Documentation generator
+sphinx-rtd-theme>=1.3.0  # Read the Docs theme
+pdoc>=14.1.0          # Auto-generate API docs
+
+# ============================================================================
+# API & WEB INTERFACE - Optional, for remote monitoring
+# ============================================================================
+
+# Uncomment if building web dashboard:
+# flask>=3.0.0          # Lightweight web framework
+# fastapi>=0.104.0      # Modern async API framework
+# uvicorn>=0.24.0       # ASGI server for FastAPI
+# websockets>=12.0      # Real-time data streaming
+
+# ============================================================================
+# TIME SERIES ANALYSIS - For temporal RSSI patterns
+# ============================================================================
+
+# Already included: pandas (has time series support)
+# Additional specialized tools:
+# statsmodels>=0.14.0   # Statistical models and tests
+# pykalman>=0.9.5       # Kalman filtering for RSSI smoothing
+
+# ============================================================================
+# PLATFORM-SPECIFIC NOTES
+# ============================================================================
+#
+# JETSON (Production):
+#   pip install scapy pandas numpy PyYAML matplotlib scipy
+#   (Skip dev tools and Jupyter to save space)
+#
+# macOS/Desktop (Development):
+#   pip install -r requirements.txt
+#   (Install everything for full development environment)
+#
+# SLAM/Fusion developers:
+#   pip install scapy pandas numpy PyYAML
+#   (Minimal for integration work)
+#
+# ============================================================================
+# SYSTEM PACKAGES (Install via apt, NOT pip)
+# ============================================================================
+#
+# On Jetson/Linux:
+#   sudo apt install wireless-tools iw aircrack-ng
+#   sudo apt install ros-humble-rclpy ros-humble-std-msgs
+#
+# NVIDIA Specific (pycuVSLAM):
+#   Follow NVIDIA installation guide for pycuVSLAM
+#   https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_visual_slam
+#
+# ============================================================================
+# INSTALLATION INSTRUCTIONS
+# ============================================================================
+#
+# OPTION 1: Automated setup (recommended)
+#   ./setup_venv.sh
+#   Choose installation level when prompted
+#
+# OPTION 2: Manual installation by role
+#
+#   WiFi Developer (Minimal):
+#     pip install scapy pandas numpy PyYAML
+#
+#   WiFi Developer + Visualization (Standard):
+#     pip install scapy pandas numpy PyYAML matplotlib seaborn plotly scipy psutil
+#
+#   Full Development Environment:
+#     pip install -r requirements.txt
+#
+# OPTION 3: Custom selection
+#   Uncomment packages you need and run:
+#     pip install -r requirements.txt
+#
+# ============================================================================
+# KNOWN COMPATIBILITY
+# ============================================================================
+# Tested on:
+#   - Python 3.9.6 (macOS ARM64)
+#   - Python 3.8+ (Jetson with JetPack 5.x/6.x)
+#   - Ubuntu 20.04/22.04 (ROS 2 Humble)
+#   - CUDA 11.8+ (for Jetson GPU acceleration)
+#
+# Known Issues:
+#   - Some packages may require system libraries (see below)
+#   - TensorFlow/PyTorch require specific CUDA versions on Jetson
+#
+# ============================================================================
+# SYSTEM LIBRARY DEPENDENCIES (install via apt)
+# ============================================================================
+#
+# For full functionality, install these system packages:
+#
+# On Ubuntu/Jetson:
+#   sudo apt update
+#   sudo apt install -y \
+#     python3-dev \
+#     build-essential \
+#     libpcap-dev \
+#     wireless-tools \
+#     iw \
+#     aircrack-ng \
+#     libhdf5-dev \
+#     libnetcdf-dev
+#
+# For ROS 2:
+#   sudo apt install -y \
+#     ros-humble-rclpy \
+#     ros-humble-std-msgs \
+#     ros-humble-geometry-msgs
+#
+# ============================================================================
+# PACKAGE SUMMARY
+# ============================================================================
+# Total packages (if all installed): ~50+
+#
+# Core (Required):          4 packages  (~20 MB)
+# Visualization:            4 packages  (~100 MB)
+# Development Tools:        6 packages  (~50 MB)
+# Data Export/Import:       5 packages  (~150 MB)
+# Performance/Logging:      7 packages  (~100 MB)
+# Documentation:            3 packages  (~30 MB)
+# Advanced (Optional):      20+ packages (~2+ GB with ML frameworks)
+#
+# Recommended install sizes:
+#   - Minimal (Jetson):     ~50 MB
+#   - Standard (Desktop):   ~300 MB
+#   - Full (Dev):           ~500 MB
+#   - With ML:              ~3 GB
+#
+# ============================================================================
+# VERSION PINNING
+# ============================================================================
+#
+# For production deployments, consider pinning exact versions:
+#
+# Generate pinned requirements:
+#   pip freeze > requirements-lock.txt
+#
+# Install from pinned versions:
+#   pip install -r requirements-lock.txt
+#
+# This ensures reproducible environments across team members.
+#
+# ============================================================================
+# CONTRIBUTING
+# ============================================================================
+#
+# When adding new dependencies:
+# 1. Add to appropriate section with version constraint
+# 2. Add comment explaining why it's needed
+# 3. Test on both macOS and Jetson
+# 4. Update this summary section
+# 5. Commit with descriptive message
+#
+# ============================================================================
+# MAINTENANCE
+# ============================================================================
+#
+# Update all packages:
+#   pip install --upgrade -r requirements.txt
+#
+# Check for security vulnerabilities:
+#   pip install safety
+#   safety check
+#
+# Check for outdated packages:
+#   pip list --outdated
+#
+# ============================================================================
+# Last Updated: November 15, 2025
+# Maintainer: WiFi Monitor Team
+# ============================================================================
 
