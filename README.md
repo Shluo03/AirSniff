@@ -60,7 +60,7 @@ graph LR
             H --> J[Final 3D<br/>Reconstruction]
             I --> J
             J --> K[GLB Files]
-            J --> L[Heatmap JSON]
+            
         end
     end
 ```
