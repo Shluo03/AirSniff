@@ -1,0 +1,9 @@
+# File: config/video_recorder.yaml
+# Placeholder configuration for video recorder
+
+output_dir: logs/video
+base_name: capture
+fps: 30.0
+topic: /camera/image_raw
+encoding: mp4v   # OpenCV FourCC (e.g., mp4v, avc1, H264)
+

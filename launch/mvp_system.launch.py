@@ -11,16 +11,19 @@ def generate_launch_description() -> LaunchDescription:
     # (e.g., after creating package.xml and setup.py for each Python package).
     # For now, these reflect intended ROS 2 nodes:
 
-    slam_node = Node(
-        package="slam_pycu_interface",  # TODO: ensure ROS2 packaging
-        executable="slam_node",         # TODO: entry point name in setup.py
-        name="slam_node",
+    # Capture mode: record video + Wi-Fi RSSI (no real-time SLAM)
+    video_node = Node(
+        package="video_recorder",
+        executable="video_recorder_node",
+        name="video_recorder",
         output="screen",
         parameters=[
-            {"config_path": "config/slam_config.yaml"},  # TODO: use package share path
+            {"output_dir": "logs/video"},
+            {"base_name": "capture"},
+            {"fps": 30.0},
+            {"topic": "/camera/image_raw"},  # TODO: adjust camera topic
+            {"encoding": "mp4v"},
         ],
-        # TODO: remap camera topic if needed, e.g., ("/camera/image", "/camera/image_raw")
-        # remappings=[...]
     )
 
     wifi_node = Node(
@@ -33,19 +36,7 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
-    fusion_node = Node(
-        package="fusion_logger",        # TODO: ensure ROS2 packaging
-        executable="fusion_logger_node",# TODO: entry point name in setup.py
-        name="fusion_logger",
-        output="screen",
-        parameters=[
-            {"log_dir": "logs"},
-        ],
-    )
-
     return LaunchDescription([
-        slam_node,
+        video_node,
         wifi_node,
-        fusion_node,
     ])
-

@@ -6,6 +6,7 @@ import json
 import os
 import time
 from typing import Any, Dict, List
+import csv
 
 import rclpy
 from rclpy.node import Node
@@ -57,6 +58,7 @@ class WifiMonitorNode(Node):
 
         # Parameters
         self.declare_parameter("config_path", "config/wifi_config.yaml")
+        self.declare_parameter("log_dir", "logs/wifi")
         cfg_path = self.get_parameter("config_path").get_parameter_value().string_value
         self._config = self._load_config(cfg_path)
 
@@ -66,10 +68,21 @@ class WifiMonitorNode(Node):
 
         self._monitor = WifiMonitor(interface=iface)
 
+        # CSV logging setup
+        self._log_dir = self.get_parameter("log_dir").get_parameter_value().string_value
+        os.makedirs(self._log_dir, exist_ok=True)
+        ts = int(time.time())
+        self._csv_path = os.path.join(self._log_dir, f"wifi_{ts}.csv")
+        self._csv_file = open(self._csv_path, "w", newline="", encoding="utf-8")
+        self._writer = csv.writer(self._csv_file)
+        self._writer.writerow(["timestamp", "ssid", "bssid", "rssi_dbm", "channel"])  # header
+
         self._pub = self.create_publisher(String, "/wifi/rssi", 10)
         self._timer = self.create_timer(self._poll_interval, self._on_timer)
 
-        self.get_logger().info(f"wifi_monitor initialized on iface={iface} interval={self._poll_interval}s")
+        self.get_logger().info(
+            f"wifi_monitor initialized on iface={iface} interval={self._poll_interval}s; CSV={self._csv_path}"
+        )
 
     def _load_config(self, path: str) -> Dict[str, Any]:
         if not os.path.exists(path):
@@ -101,6 +114,24 @@ class WifiMonitorNode(Node):
             msg.data = json.dumps(r)
             self._pub.publish(msg)
 
+            # Also log to CSV
+            self._writer.writerow([
+                r.get("timestamp", now),
+                r.get("ssid", ""),
+                r.get("bssid", ""),
+                r.get("rssi_dbm", ""),
+                r.get("channel", ""),
+            ])
+            self._csv_file.flush()
+
+    def destroy_node(self) -> None:  # type: ignore[override]
+        try:
+            if hasattr(self, "_csv_file") and self._csv_file:
+                self._csv_file.flush()
+                self._csv_file.close()
+        finally:
+            super().destroy_node()
+
 
 def main(args=None) -> None:
     rclpy.init(args=args)
@@ -116,4 +147,3 @@ def main(args=None) -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -5,12 +5,21 @@ rclpy
 numpy
 PyYAML
 
-# TODO: image handling; install per-platform if needed
-# opencv-python
+# Image handling
+opencv-python  # required for video recorder and offline recon
+
+# Depth Anything V3 pipeline
+# IMPORTANT: On Jetson, install torch/torchvision matching your JetPack via NVIDIA wheels.
+# torch
+# torchvision
+depth-anything-3
 
 # TODO: ROS 2 launch packages (usually from ROS distro, not pip)
 # launch
 # launch_ros
 
-# NOTE: pycuVSLAM is installed separately following NVIDIA instructions.
-
+# Offline reconstruction (install separately; heavy deps)
+# torch
+# torchvision
+# open3d
+# colmap  # installed via system package manager; not pip

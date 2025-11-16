@@ -1,0 +1,7 @@
+# Minimal deps for DA3 test
+opencv-python
+depth-anything-3
+# torch and torchvision must be installed via NVIDIA Jetson wheels matching your JetPack
+# torch
+# torchvision
+
