@@ -111,7 +111,7 @@ MVP for a drone-based system that:
 ═══════════════════════════════════════════════════════════════════
                     Component Responsibilities
 ═══════════════════════════════════════════════════════════════════
-
+'''
 ┌──────────────────────┬──────────────────────────────────────────┐
 │ Component            │ Responsibility                           │
 ├──────────────────────┼──────────────────────────────────────────┤
@@ -141,8 +141,9 @@ MVP for a drone-based system that:
 │                      │ - Generates colored point clouds        │
 │                      │ - Creates final outputs                  │
 └──────────────────────┴──────────────────────────────────────────┘
+'''
 
-
+'''
 ═══════════════════════════════════════════════════════════════════
                         ROS 2 Topics
 ═══════════════════════════════════════════════════════════════════
@@ -200,7 +201,8 @@ Final Outputs (from Final 3D Reconstruction):
 └── logs/visualization_TIMESTAMP.html
     Interactive 3D visualization (Plotly/Three.js)
 
-
+'''
+'''
 ═══════════════════════════════════════════════════════════════════
                     Processing Pipeline
 ═══════════════════════════════════════════════════════════════════
@@ -220,7 +222,7 @@ OFFLINE (Post-processing):
      - Generate colored point cloud
      - Create interactive visualization
      - Export final outputs
-
+'''
 
 ═══════════════════════════════════════════════════════════════════
                     Key Advantages
