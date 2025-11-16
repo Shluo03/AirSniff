@@ -43,7 +43,7 @@ flowchart TD
 graph LR
     subgraph Jetson Drone
         subgraph Input
-            A[Camera] --> B[stella_vslam]
+            A[Camera] --> B[VIO]
             A --> C[Depth Anything V3]
             D[Wi-Fi wlan0] --> E[wifi_monitor]
         end
