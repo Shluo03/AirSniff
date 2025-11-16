@@ -351,7 +351,7 @@ end_header
 |-----------|-----------|----------|-------|
 | Camera Input | 30 | - | USB/CSI camera |
 | stella_vslam | 20-30 | 30% | Feature-based SLAM |
-| Depth Anything V2 | 10-15 | 60% | ViT-Large model |
+| Depth Anything V3 | 10-15 | 60% | ViT-Large model |
 | Wi-Fi Scanning | 1 | <1% | Background polling |
 | Data Logging | 30 | <5% | Buffered writes |
 
