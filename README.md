@@ -8,7 +8,7 @@ flowchart TD
     Camera --> Depth[Depth Anything V3<br/>Depth Estimation]
     
     VIO -->| | Depth
-    VIO -->|| Logger[Fusion Logger<br/>Collects Pose + Depth + RSSI]
+    VIO -->| | Logger[Fusion Logger<br/>Collects Pose + Depth + RSSI]
     
     Depth -->|/depth/image<br/>/depth/cloud| Recon[3D Reconstruction Fusion<br/>Combines pose + depth]
     
