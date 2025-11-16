@@ -17,24 +17,20 @@ class WiFiScannerNode(Node):
     def __init__(self):
         super().__init__('wifi_scanner_node')
         
-        # Declare parameters
         self.declare_parameter('interface', 'wlP1p1s0')
         self.declare_parameter('scan_method', 'iwlist')  # 'iwlist' or 'nmcli'
         self.declare_parameter('scan_interval', 2.0)  # seconds
         self.declare_parameter('min_rssi', -90)
         self.declare_parameter('max_rssi', -20)
         
-        # Get parameters
         self.interface = self.get_parameter('interface').value
         self.scan_method = self.get_parameter('scan_method').value
         self.scan_interval = self.get_parameter('scan_interval').value
         self.min_rssi = self.get_parameter('min_rssi').value
         self.max_rssi = self.get_parameter('max_rssi').value
         
-        # Create publisher
         self.publisher_ = self.create_publisher(String, '/wifi/rssi', 10)
         
-        # Create timer for periodic scanning
         self.timer = self.create_timer(self.scan_interval, self.scan_callback)
         
         self.scan_count = 0
