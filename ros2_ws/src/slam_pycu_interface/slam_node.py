@@ -36,6 +36,14 @@ class SlamNode(Node):
         self._manager = PycuVSLAMManager(config_path=self._config_path)
         self._manager.initialize_slam()
 
+        # Initialize IMU
+        imu_port = self.declare_parameter(
+            "imu_port",
+            "/dev/serial/by-id/usb-CubePilot_CubeOrange+_250048000D51333233343437-if00"
+        ).get_parameter_value().string_value
+        imu_baud = self.declare_parameter("imu_baud", 115200).get_parameter_value().integer_value
+        self._manager.initialize_imu(port=imu_port, baud=imu_baud)
+
         # Publishers
         self._pose_pub = self.create_publisher(PoseStamped, "/slam/pose", 10)
         self._map_points_pub = self.create_publisher(String, "/slam/map_points", 10)
@@ -100,7 +108,7 @@ class SlamNode(Node):
             self._publish_pose(pose)
             # Print position to terminal
             pos = pose.get("position", (0.0, 0.0, 0.0))
-            print(f"[SLAM Position] X: {pos[0]:.4f}, Y: {pos[1]:.4f}, Z: {pos[2]:.4f}")
+            print(f"[SLAM] X: {pos[0]:.4f}, Y: {pos[1]:.4f}, Z: {pos[2]:.4f}")
 
     def _publish_pose(self, pose_dict) -> None:
         """Publish pose as PoseStamped message.
@@ -143,6 +151,7 @@ def main(args=None) -> None:
     except KeyboardInterrupt:
         pass
     finally:
+        node._manager.shutdown()
         node.destroy_node()
         rclpy.shutdown()
 

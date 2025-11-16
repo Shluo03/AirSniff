@@ -14,6 +14,11 @@ try:
 except ImportError:
     vslam = None
 
+try:
+    from .imu_utils import IMUReader
+except ImportError:
+    IMUReader = None
+
 
 class PycuVSLAMManager:
     """Encapsulates pycuVSLAM usage for monocular/stereo SLAM.
@@ -37,6 +42,7 @@ class PycuVSLAMManager:
         self._map_points: List[Tuple[float, float, float]] = []
         self._vslam_system: Optional[Any] = None
         self._frame_count: int = 0
+        self._imu_reader: Optional[Any] = None
         
         # Load YAML configuration
         self._config: Dict[str, Any] = {}
@@ -67,7 +73,7 @@ class PycuVSLAMManager:
                 "frame_id": "camera_link",
             },
             "pycuVSLAM": {
-                "use_stereo": False,
+                "use_stereo": True,
                 "enable_loop_closure": True,
                 "enable_relocalization": True,
                 "max_features": 2000,
@@ -204,12 +210,17 @@ class PycuVSLAMManager:
         y = np.sin(self._frame_count * 0.05) * drift_scale * 10
         z = 0.5  # Hovering at 0.5m
         
+        imu_data = None
+        if self._imu_reader is not None and self._imu_reader.is_connected():
+            imu_data = self._imu_reader.get_latest_imu()
+        
         self._latest_pose = {
             "timestamp": timestamp,
             "position": (x, y, z),
             "orientation": (1.0, 0.0, 0.0, 0.0),  # Identity quaternion
             "frame_count": self._frame_count,
             "is_mock": True,
+            "imu": imu_data,
         }
 
     def get_latest_pose(self) -> Optional[Dict[str, Any]]:
@@ -242,4 +253,31 @@ class PycuVSLAMManager:
                 print(f"Warning: Could not get map points: {e}")
         
         return list(self._map_points)
+
+    def initialize_imu(self, port: str, baud: int = 115200) -> bool:
+        """Initialize IMU reader.
+        
+        Args:
+            port: Serial port for MAVLink connection.
+            baud: Baud rate.
+            
+        Returns:
+            bool: True if initialized successfully.
+        """
+        if IMUReader is None:
+            print("Warning: IMUReader not available")
+            return False
+        
+        try:
+            self._imu_reader = IMUReader(port=port, baud=baud)
+            self._imu_reader.start()
+            return self._imu_reader.is_connected()
+        except Exception as e:
+            print(f"Warning: Could not initialize IMU: {e}")
+            return False
+
+    def shutdown(self) -> None:
+        """Clean up resources."""
+        if self._imu_reader is not None:
+            self._imu_reader.stop()
 

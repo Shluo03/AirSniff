@@ -5,6 +5,7 @@ rclpy
 numpy
 PyYAML
 pyyaml
+pymavlink
 
 # TODO: image handling; install per-platform if needed
 # opencv-python
