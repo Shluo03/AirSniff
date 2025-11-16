@@ -3,7 +3,7 @@
 ## Goal
 MVP for a drone-based system that:
 1. Uses **stella_vslam** for visual SLAM (pose estimation and feature tracking)
-2. Uses **Depth Anything V2** for monocular depth estimation and 3D reconstruction
+2. Uses **Depth Anything V3** for monocular depth estimation and 3D reconstruction
 3. Logs **Wi‑Fi RSSI** for signal strength mapping
 4. Fuses pose + depth + RSSI into logs for Wi‑Fi heatmap generation
 
@@ -12,7 +12,7 @@ MVP for a drone-based system that:
 - **Robust**: Works in various environments (indoor/outdoor)
 - **Real-time capable**: Optimized models available for edge devices
 - **Open source**: MIT licensed
-- **State-of-the-art**: Published by ByteDance in 2024
+- **State-of-the-art**: Published by ByteDance in 2025
 
 ## System Architecture
 
@@ -389,5 +389,5 @@ end_header
 ## License
 
 - stella_vslam: BSD-2-Clause
-- Depth Anything V2: Apache 2.0
+- Depth Anything V3: Apache 2.0
 - This MVP code: MIT (your choice)
