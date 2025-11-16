@@ -10,4 +10,5 @@ wifi_scanner_node:
     # Data Filtering
     min_rssi: -90                    # Minimum RSSI to include (dBm)
     max_rssi: -20                    # Maximum RSSI to include (dBm)
+    target_ssid: "FAF-HQ-GUEST"      # Target SSID to track (leave empty "" for all networks)
 

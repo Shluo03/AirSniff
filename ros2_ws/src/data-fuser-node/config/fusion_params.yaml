@@ -5,6 +5,6 @@ heatmap_mapper_node:
     output_file: "fused_heatmap.csv"
     
     # Data Filtering
-    target_ssid: ""  # Empty string = log all networks. Set to specific SSID to filter
-    min_rssi: -90    # Minimum RSSI threshold (dBm)
+    target_ssid: "FAF-HQ-GUEST"  # Target SSID to track. Leave empty "" for all networks
+    min_rssi: -90                 # Minimum RSSI threshold (dBm)
 
