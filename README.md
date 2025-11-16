@@ -4,11 +4,11 @@
 
 ```mermaid
 flowchart TD
-    Camera[📷 Camera - Monocular] --> SLAM[stella_vslam<br/>Pose + Map]
+    Camera[📷 Camera - Monocular] --> VIO[VIO<br/>Pose + Map]
     Camera --> Depth[Depth Anything V3<br/>Depth Estimation]
     
-    SLAM -->|/slam/pose<br/>/slam/map_points| Depth
-    SLAM -->|/slam/pose| Logger[Fusion Logger<br/>Collects Pose + Depth + RSSI]
+    VIO -->|/slam/pose<br/>/slam/map_points| Depth
+    VIO -->|/slam/pose| Logger[Fusion Logger<br/>Collects Pose + Depth + RSSI]
     
     Depth -->|/depth/image<br/>/depth/cloud| Recon[3D Reconstruction Fusion<br/>Combines pose + depth]
     
