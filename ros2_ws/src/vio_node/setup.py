@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'vio = vio_node.vio:main',
+            'vio_mock = vio_node.vio_mock:main',
         ],
     },
 )
