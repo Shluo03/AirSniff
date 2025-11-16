@@ -28,13 +28,13 @@ MVP for a drone-based system that:
 │       v                                       v                 │
 │  ┌─────────────────┐              ┌──────────────────────┐    │
 │  │ stella_vslam    │              │ Depth Anything V3    │    │
-│  │ (Pose + Map)    │              │ (Depth Estimation)   │    │
-│  └────────┬────────┘              └──────────┬───────────┘    │
-│           │                                   │                 │
-│           │ /slam/pose                       │ /depth/image    │
-│           │ /slam/map_points                 │ /depth/cloud    │
-│           │                                   │                 │
-│           v                                   v                 │
+│  │ (Pose + Map)    │ ────────── > │ (Depth Estimation)   │    │
+│  └──────── ────────┘              └──────────┬───────────┘    │
+│                                              │                 │
+│                                              │ /depth/image    │
+│                                              │ /depth/cloud    │
+│                                              │                 │
+│                                              v                 │
 │  ┌────────────────────────────────────────────────────┐        │
 │  │            3D Reconstruction Fusion                │        │
 │  │     (Combines SLAM pose + depth for 3D map)       │        │
