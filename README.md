@@ -20,9 +20,9 @@ flowchart TD
     Logger -->|logs/fused_data_*.csv| Final[Final 3D Reconstruction<br/>Post-processing]
     Recon -->|reconstruction data| Final
     
-    Final --> Output1[logs/final_reconstruction_*.ply]
-    Final --> Output2[logs/wifi_heatmap_3d_*.json]
-    Final --> Output3[logs/colored_pointcloud_*.ply]
+   
+    Final --> Output[logs/wifi_map_model_*.glb]
+   
     
     style Camera fill:#e1f5ff
     
