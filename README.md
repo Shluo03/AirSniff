@@ -75,7 +75,7 @@ graph LR
 ```mermaid
 sequenceDiagram
     participant C as Camera
-    participant S as stella_vslam
+    participant S as VIO
     participant D as Depth Anything V3
     participant R as 3D Recon Fusion
     participant W as wifi_monitor
@@ -104,7 +104,7 @@ sequenceDiagram
 ```mermaid
 mindmap
   root((Drone System))
-    stella_vslam
+    VIO
       Camera pose estimation
       Sparse feature map
       Provides pose to Depth
@@ -141,7 +141,7 @@ stateDiagram-v2
     Calibrating --> Ready: All systems OK
     
     Ready --> Running: Start flight
-    Running --> Tracking: Camera & SLAM active
+    Running --> Tracking: Camera & VIO active
     Tracking --> Mapping: Building 3D map
     Mapping --> Logging: Recording data
     
@@ -172,7 +172,7 @@ gantt
     section Camera
     Image Capture: 0, 33ms
     
-    section stella_vslam
+    section VIO
     Feature Extract: 5, 20ms
     Pose Estimate: 25, 15ms
     
