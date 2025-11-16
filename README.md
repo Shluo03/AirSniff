@@ -7,7 +7,7 @@ flowchart TD
     Camera[📷 Camera - Monocular] --> VIO[VIO<br/>Pose + Map]
     Camera --> Depth[Depth Anything V3<br/>Depth Estimation]
     
-    VIO -->| Depth
+    VIO -->| | Depth
     VIO -->|/slam/pose| Logger[Fusion Logger<br/>Collects Pose + Depth + RSSI]
     
     Depth -->|/depth/image<br/>/depth/cloud| Recon[3D Reconstruction Fusion<br/>Combines pose + depth]
