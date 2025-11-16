@@ -156,52 +156,7 @@ stateDiagram-v2
     Error --> [*]
 ```
 
-## ROS 2 Topics Architecture
 
-```mermaid
-graph TD
-    subgraph Topics
-        T1[/camera/image_raw]
-        T2[/slam/pose]
-        T3[/slam/map_points]
-        T4[/depth/image]
-        T5[/depth/cloud]
-        T6[/reconstruction/points]
-        T7[/wifi/rssi]
-    end
-    
-    subgraph Publishers
-        P1[Camera Driver]
-        P2[stella_vslam]
-        P3[Depth Anything V3]
-        P4[3D Recon Fusion]
-        P5[wifi_monitor]
-    end
-    
-    subgraph Subscribers
-        S1[stella_vslam]
-        S2[Depth Anything V3]
-        S3[3D Recon Fusion]
-        S4[Fusion Logger]
-    end
-    
-    P1 --> T1
-    P2 --> T2
-    P2 --> T3
-    P3 --> T4
-    P3 --> T5
-    P4 --> T6
-    P5 --> T7
-    
-    T1 --> S1
-    T1 --> S2
-    T2 --> S2
-    T2 --> S3
-    T5 --> S3
-    T2 --> S4
-    T6 --> S4
-    T7 --> S4
-```
 
 ## Performance Pipeline
 
