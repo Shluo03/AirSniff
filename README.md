@@ -61,7 +61,7 @@ graph LR
             G --> I[Point Clouds]
             H --> J[Final 3D<br/>Reconstruction]
             I --> J
-            J --> K[PLY Files]
+            J --> K[GLB Files]
             J --> L[Heatmap JSON]
         end
     end
