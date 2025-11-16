@@ -16,7 +16,6 @@ MVP for a drone-based system that:
 
 ## System Architecture
 
-```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         Jetson Drone                            │
 ├─────────────────────────────────────────────────────────────────┤
@@ -28,20 +27,28 @@ MVP for a drone-based system that:
 │       v                                       v                 │
 │  ┌─────────────────┐              ┌──────────────────────┐    │
 │  │ stella_vslam    │              │ Depth Anything V3    │    │
-│  │ (Pose + Map)    │ ────────── > │ (Depth Estimation)   │    │
-│  └──────── ────────┘              └──────────┬───────────┘    │
-│                                              │                 │
-│                                              │ /depth/image    │
-│                                              │ /depth/cloud    │
-│                                              │                 │
-│                                              v                 │
-│  ┌────────────────────────────────────────────────────┐        │
-│  │            3D Reconstruction Fusion                │        │
-│  │     (Combines SLAM pose + depth for 3D map)       │        │
-│  └──────────────────────┬─────────────────────────────┘        │
-│                         │                                       │
-│                         │ /reconstruction/points               │
-│                         │                                       │
+│  │ (Pose + Map)    │──────────────>│ (Depth Estimation)   │    │
+│  └────────┬────────┘              └──────────┬───────────┘    │
+│           │                                   │                 │
+│           │ /slam/pose                       │ /depth/image    │
+│           │ /slam/map_points                 │ /depth/cloud    │
+│           │                                   │                 │
+│           │                                   v                 │
+│           │              ┌────────────────────────────────┐    │
+│           │              │  3D Reconstruction Fusion      │    │
+│           │              │  (Combines pose + depth)       │    │
+│           │              └──────────┬─────────────────────┘    │
+│           │                         │                           │
+│           │                         │ /reconstruction/points   │
+│           │                         │                           │
+│           v                         v                           │
+│  ┌────────────────────────────────────────────┐               │
+│  │          Fusion Logger                      │               │
+│  │   (Collects Pose + Depth + RSSI)           │               │
+│  └──────────────────┬──────────────────────────┘               │
+│                     │                                           │
+│                     │ logs/fused_data_*.csv                    │
+│                     │                                           │
 │  Wi-Fi Interface (wlan0)                                       │
 │       │                                                         │
 │       v                                                         │
@@ -51,18 +58,180 @@ MVP for a drone-based system that:
 │         │                                                       │
 │         │ /wifi/rssi                                           │
 │         │                                                       │
-│         v                                                       │
-│  ┌─────────────────────────────────────┐                      │
-│  │       Fusion Logger                  │                      │
-│  │  (Pose + Depth + RSSI -> CSV/DB)    │                      │
-│  └─────────────────┬────────────────────┘                      │
-│                    │                                            │
-│                    v                                            │
-│         logs/fused_data_*.csv                                  │
-│         logs/point_cloud_*.ply                                 │
+│         └──────────────────┐                                   │
+│                            │                                    │
+│                            v                                    │
+│                     (to Fusion Logger)                         │
+│                                                                 │
+│                            │                                    │
+│                            v                                    │
+│  ┌─────────────────────────────────────────────────┐          │
+│  │         Final 3D Reconstruction                  │          │
+│  │  (Post-processing: Fusion Logger +              │          │
+│  │   3D Reconstruction Fusion data)                │          │
+│  │                                                  │          │
+│  │  Outputs:                                       │          │
+│  │  - logs/final_reconstruction_*.ply              │          │
+│  │  - logs/wifi_heatmap_3d_*.json                  │          │
+│  │  - logs/colored_pointcloud_*.ply                │          │
+│  └──────────────────────────────────────────────────┘          │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
-```
+
+
+═══════════════════════════════════════════════════════════════════
+                         Data Flow Summary
+═══════════════════════════════════════════════════════════════════
+
+1. Camera → stella_vslam → Pose (/slam/pose)
+                         ↓
+2. stella_vslam → Depth Anything V3 (provides pose for depth alignment)
+
+3. Camera → Depth Anything V3 → Depth Map (/depth/image, /depth/cloud)
+
+4. stella_vslam Pose + Depth Cloud → 3D Reconstruction Fusion
+                                   ↓
+                          /reconstruction/points
+
+5. stella_vslam Pose → Fusion Logger
+   Wi-Fi RSSI → Fusion Logger
+   Reconstruction Points → Fusion Logger
+                ↓
+        logs/fused_data_*.csv
+
+6. Fusion Logger Data + 3D Reconstruction Fusion Data
+                ↓
+        Final 3D Reconstruction Module
+                ↓
+        - final_reconstruction_*.ply (complete 3D map)
+        - wifi_heatmap_3d_*.json (RSSI mapped to 3D space)
+        - colored_pointcloud_*.ply (RSSI as colors)
+
+
+═══════════════════════════════════════════════════════════════════
+                    Component Responsibilities
+═══════════════════════════════════════════════════════════════════
+
+┌──────────────────────┬──────────────────────────────────────────┐
+│ Component            │ Responsibility                           │
+├──────────────────────┼──────────────────────────────────────────┤
+│ stella_vslam         │ - Camera pose estimation                │
+│                      │ - Sparse feature map                     │
+│                      │ - Provides pose to Depth Anything       │
+│                      │ - Sends pose to Fusion Logger           │
+├──────────────────────┼──────────────────────────────────────────┤
+│ Depth Anything V3    │ - Monocular depth estimation            │
+│                      │ - Generates depth maps                   │
+│                      │ - Creates 3D point clouds (camera frame)│
+├──────────────────────┼──────────────────────────────────────────┤
+│ 3D Reconstruction    │ - Transforms depth clouds to world frame│
+│ Fusion               │ - Accumulates points over time          │
+│                      │ - Publishes global point cloud          │
+├──────────────────────┼──────────────────────────────────────────┤
+│ wifi_monitor         │ - Polls Wi-Fi RSSI                      │
+│                      │ - Publishes signal strength readings    │
+├──────────────────────┼──────────────────────────────────────────┤
+│ Fusion Logger        │ - Collects all data streams             │
+│                      │ - Time-synchronizes data                │
+│                      │ - Writes CSV logs                        │
+│                      │ - Stores intermediate point clouds      │
+├──────────────────────┼──────────────────────────────────────────┤
+│ Final 3D             │ - Post-processes all collected data     │
+│ Reconstruction       │ - Maps RSSI to 3D coordinates           │
+│                      │ - Generates colored point clouds        │
+│                      │ - Creates final outputs                  │
+└──────────────────────┴──────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════
+                        ROS 2 Topics
+═══════════════════════════════════════════════════════════════════
+
+/camera/image_raw              (sensor_msgs/Image)
+    ↓
+/slam/pose                     (geometry_msgs/PoseStamped)
+/slam/map_points               (sensor_msgs/PointCloud2)
+/slam/tracking_status          (std_msgs/String)
+    ↓
+/depth/image                   (sensor_msgs/Image)
+/depth/raw                     (sensor_msgs/Image)
+/depth/cloud                   (sensor_msgs/PointCloud2)
+    ↓
+/reconstruction/points         (sensor_msgs/PointCloud2)
+/reconstruction/map            (sensor_msgs/PointCloud2)
+    ↓
+/wifi/rssi                     (custom_msgs/WifiSignal)
+    ↓
+(All logged by Fusion Logger)
+    ↓
+/final/reconstruction          (sensor_msgs/PointCloud2)
+/final/wifi_heatmap            (visualization_msgs/MarkerArray)
+
+
+═══════════════════════════════════════════════════════════════════
+                        Output Files
+═══════════════════════════════════════════════════════════════════
+
+Intermediate Outputs (from Fusion Logger):
+├── logs/fused_data_TIMESTAMP.csv
+│   Columns: timestamp, x, y, z, qx, qy, qz, qw, rssi, ssid, ...
+│
+├── logs/reconstruction_TIMESTAMP.ply
+│   3D point cloud from reconstruction fusion
+│
+└── logs/trajectory_TIMESTAMP.txt
+    Camera trajectory over time
+
+Final Outputs (from Final 3D Reconstruction):
+├── logs/final_reconstruction_TIMESTAMP.ply
+│   Complete 3D reconstruction with all points
+│
+├── logs/wifi_heatmap_3d_TIMESTAMP.json
+│   {
+│     "points": [[x, y, z], ...],
+│     "rssi_values": [-45, -67, ...],
+│     "ssids": ["DroneNet", ...]
+│   }
+│
+├── logs/colored_pointcloud_TIMESTAMP.ply
+│   Point cloud with RSSI mapped to colors
+│   (Red = strong signal, Blue = weak signal)
+│
+└── logs/visualization_TIMESTAMP.html
+    Interactive 3D visualization (Plotly/Three.js)
+
+
+═══════════════════════════════════════════════════════════════════
+                    Processing Pipeline
+═══════════════════════════════════════════════════════════════════
+
+ONLINE (Real-time during flight):
+  1. stella_vslam: Track camera pose
+  2. Depth Anything V3: Estimate depth
+  3. 3D Reconstruction Fusion: Build point cloud incrementally
+  4. wifi_monitor: Log RSSI
+  5. Fusion Logger: Record everything to CSV
+
+OFFLINE (Post-processing):
+  6. Final 3D Reconstruction:
+     - Load fused_data_*.csv
+     - Load reconstruction_*.ply
+     - Map RSSI values to 3D coordinates
+     - Generate colored point cloud
+     - Create interactive visualization
+     - Export final outputs
+
+
+═══════════════════════════════════════════════════════════════════
+                    Key Advantages
+═══════════════════════════════════════════════════════════════════
+
+✓ stella_vslam provides accurate pose tracking
+✓ Depth Anything V3 creates dense 3D reconstruction
+✓ 3D Reconstruction Fusion accumulates global map
+✓ Fusion Logger ensures time-synchronized data
+✓ Final 3D Reconstruction creates publishable results
+✓ Wi-Fi heatmap overlaid on accurate 3D geometry
 
 ## Packages
 
