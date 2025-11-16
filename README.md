@@ -190,40 +190,8 @@ gantt
 
 ---
 
-## How to Use These Diagrams
 
-### On GitHub
-1. Copy the entire markdown file to your repository
-2. GitHub will automatically render the Mermaid diagrams
-3. They will look clean and professional
 
-### Alternative: Generate Images
-```bash
-# Install mermaid-cli
-npm install -g @mermaid-js/mermaid-cli
 
-# Generate PNG images
-mmdc -i SYSTEM_ARCHITECTURE_MERMAID.md -o architecture.png
-```
 
-### In Documentation
-- Use the Mermaid code blocks directly in README.md
-- GitHub, GitLab, and many other platforms support Mermaid natively
-- VS Code has Mermaid preview extensions
-
----
-
-## Advantages of Mermaid Diagrams
-
-✅ **Renders properly** on GitHub/GitLab  
-✅ **Version controllable** - plain text, easy to diff  
-✅ **Easy to update** - just edit the text  
-✅ **Multiple diagram types** - flowcharts, sequences, state diagrams  
-✅ **Professional looking** - consistent styling  
-✅ **Exportable** - can convert to PNG/SVG/PDF  
-
----
-
-## Original ASCII Diagram (For Reference)
-
-The ASCII art diagram you saw uses box-drawing characters which don't render well in most markdown viewers. Instead, use the Mermaid diagrams above for clean, professional visualization.
+  
