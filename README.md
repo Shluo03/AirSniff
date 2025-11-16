@@ -25,7 +25,7 @@ flowchart TD
     Final --> Output3[logs/colored_pointcloud_*.ply]
     
     style Camera fill:#e1f5ff
-    style SLAM fill:#ffe1e1
+    
     style Depth fill:#e1ffe1
     style Recon fill:#fff5e1
     style WiFi fill:#e1f5ff
