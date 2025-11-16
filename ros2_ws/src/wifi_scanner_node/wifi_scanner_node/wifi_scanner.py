@@ -22,14 +22,12 @@ class WiFiScannerNode(Node):
         self.declare_parameter('scan_interval', 2.0)  # seconds
         self.declare_parameter('min_rssi', -90)
         self.declare_parameter('max_rssi', -20)
-        self.declare_parameter('target_ssid', '')  # Target SSID to track (empty = all networks)
         
         self.interface = self.get_parameter('interface').value
         self.scan_method = self.get_parameter('scan_method').value
         self.scan_interval = self.get_parameter('scan_interval').value
         self.min_rssi = self.get_parameter('min_rssi').value
         self.max_rssi = self.get_parameter('max_rssi').value
-        self.target_ssid = self.get_parameter('target_ssid').value
         
         self.publisher_ = self.create_publisher(String, '/wifi/rssi', 10)
         
@@ -42,10 +40,6 @@ class WiFiScannerNode(Node):
         self.get_logger().info(f'Scan Method: {self.scan_method}')
         self.get_logger().info(f'Scan Interval: {self.scan_interval}s')
         self.get_logger().info(f'RSSI Range: {self.min_rssi} to {self.max_rssi} dBm')
-        if self.target_ssid:
-            self.get_logger().info(f'Target SSID: "{self.target_ssid}" (single network mode)')
-        else:
-            self.get_logger().info('Target SSID: ALL (scanning all networks)')
     
     def get_signal_quality(self, rssi):
         """Convert RSSI to human-readable quality."""
@@ -167,22 +161,12 @@ class WiFiScannerNode(Node):
             return []
     
     def filter_networks(self, networks):
-        """Filter networks by RSSI range and optionally by target SSID."""
+        """Filter networks by RSSI range."""
         filtered = []
         for net in networks:
             rssi = net.get('rssi', -100)
-            ssid = net.get('ssid', '')
-            
-            # Check RSSI range
-            if not (self.min_rssi <= rssi <= self.max_rssi):
-                continue
-            
-            # Check target SSID if specified
-            if self.target_ssid and ssid != self.target_ssid:
-                continue
-            
-            filtered.append(net)
-        
+            if self.min_rssi <= rssi <= self.max_rssi:
+                filtered.append(net)
         return filtered
     
     def scan_callback(self):
