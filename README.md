@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TD
-    Camera[📷 Camera - Monocular] --> VIO[VIO<br/>Pose + Map]
+    Camera[📷 Monocular Camera & Flight Controller IMU - ] --> VIO[VIO<br/>Pose + Map]
     Camera --> Depth[Depth Anything V3<br/>Depth Estimation]
     
     VIO -->| | Depth
