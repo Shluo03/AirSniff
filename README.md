@@ -32,9 +32,7 @@ flowchart TD
     style Monitor fill:#e1e1ff
     style Logger fill:#ffe1ff
     style Final fill:#ffb3ba
-    style Output1 fill:#bae1ff
-    style Output2 fill:#bae1ff
-    style Output3 fill:#bae1ff
+   
 ```
 
 ## Detailed Component Flow
