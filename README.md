@@ -67,6 +67,9 @@ graph LR
     end
 ```
 
+## Demo
+![Demo - 3D reconstruction](demo.gif)
+
 ## Data Flow Sequence
 
 ```mermaid
