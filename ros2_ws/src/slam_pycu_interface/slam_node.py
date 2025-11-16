@@ -5,12 +5,12 @@ from __future__ import annotations
 import time
 from typing import Optional
 
+import numpy as np
 import rclpy
 from rclpy.node import Node
 
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import String
-# from sensor_msgs.msg import Image  # TODO: enable when integrating camera
 
 from .pycu_slam_wrapper import PycuVSLAMManager
 
@@ -18,9 +18,10 @@ from .pycu_slam_wrapper import PycuVSLAMManager
 class SlamNode(Node):
     """ROS2 node wrapping pycuVSLAM manager.
 
-    - Subscribes to a camera image topic (placeholder; TODO to implement Image->array conversion).
+    - Generates or subscribes to camera image frames (initially mock for testing).
     - Feeds frames to PycuVSLAMManager.
     - Publishes PoseStamped on /slam/pose.
+    - Prints x,y,z position to terminal for debugging.
     - Optionally publishes a placeholder map points topic /slam/map_points (String for now).
     """
 
@@ -39,45 +40,83 @@ class SlamNode(Node):
         self._pose_pub = self.create_publisher(PoseStamped, "/slam/pose", 10)
         self._map_points_pub = self.create_publisher(String, "/slam/map_points", 10)
 
-        # Subscriptions (placeholder; uncomment when Image stream is available)
-        # self._image_sub = self.create_subscription(
-        #     Image,
-        #     "/camera/image_raw",
-        #     self._on_image,
-        #     10,
-        # )
+        # Timer to generate test frames and process them
+        self._frame_timer = self.create_timer(0.033, self._on_frame_timer)  # ~30 Hz
 
-        # Optional: timer to publish placeholder map points (empty for now)
+        # Timer to publish pose
+        self._publish_timer = self.create_timer(0.1, self._on_publish_timer)  # 10 Hz
+
+        # Timer to publish placeholder map points
         self._mp_timer = self.create_timer(2.0, self._publish_map_points_placeholder)
+
+        # Frame counter for mock data
+        self._frame_counter = 0
 
         self.get_logger().info(f"slam_node initialized with config: {self._config_path}")
 
-    def _on_image(self, msg) -> None:  # msg: Image
-        """Image callback.
-
-        TODOs:
-        - Convert sensor_msgs/Image to numpy array (e.g., via cv_bridge or manual conversion).
-        - Extract timestamp; here we use wall time placeholder.
-        - Feed into SLAM and publish pose when available.
-        """
+    def _on_frame_timer(self) -> None:
+        """Timer callback to generate or fetch frames and process them."""
+        # Generate mock frame data (grayscale image)
+        # In production, this would receive from camera topic subscription
+        image = self._generate_mock_frame()
         timestamp = time.time()
-        image_array = None  # TODO: convert msg to numpy array
 
-        processed: Optional[bool] = self._manager.process_frame(image_array, timestamp)
+        # Process frame with SLAM
+        processed = self._manager.process_frame(image, timestamp)
         if processed:
-            pose = self._manager.get_latest_pose()
-            if pose is not None:
-                self._publish_pose(pose)
+            self._frame_counter += 1
+
+    def _generate_mock_frame(self) -> np.ndarray:
+        """Generate a mock camera frame for testing.
+        
+        In production, this would be replaced by actual camera input via subscription.
+        This simulates a 640x480 grayscale image with some varying pattern.
+        """
+        frame_idx = self._frame_counter % 30  # Cycle pattern every 30 frames
+        height, width = 480, 640
+        
+        # Create a simple pattern that changes over time
+        image = np.zeros((height, width), dtype=np.uint8)
+        
+        # Add a moving pattern
+        x_center = width // 2 + int(10 * np.sin(frame_idx * 0.2))
+        y_center = height // 2 + int(10 * np.cos(frame_idx * 0.2))
+        
+        # Draw a simple circle in the center
+        y, x = np.ogrid[:height, :width]
+        mask = (x - x_center) ** 2 + (y - y_center) ** 2 <= 50 ** 2
+        image[mask] = 200
+        
+        # Add some noise
+        noise = np.random.randint(0, 50, (height, width), dtype=np.uint8)
+        image = np.clip(image.astype(int) + noise.astype(int), 0, 255).astype(np.uint8)
+        
+        return image
+
+    def _on_publish_timer(self) -> None:
+        """Timer callback to publish the latest pose."""
+        pose = self._manager.get_latest_pose()
+        if pose is not None:
+            self._publish_pose(pose)
+            # Print position to terminal
+            pos = pose.get("position", (0.0, 0.0, 0.0))
+            print(f"[SLAM Position] X: {pos[0]:.4f}, Y: {pos[1]:.4f}, Z: {pos[2]:.4f}")
 
     def _publish_pose(self, pose_dict) -> None:
+        """Publish pose as PoseStamped message.
+        
+        Args:
+            pose_dict: Dict with keys 'position': (x,y,z) and 'orientation': (w,x,y,z)
+        """
         ps = PoseStamped()
         now = self.get_clock().now().to_msg()
         ps.header.stamp = now
-        ps.header.frame_id = "map"  # TODO: frame convention
+        ps.header.frame_id = "map"
 
-        # Expecting pose_dict keys: position: (x,y,z), orientation: (w,x,y,z)
+        # Extract position and orientation
         pos = pose_dict.get("position", (0.0, 0.0, 0.0))
         ori = pose_dict.get("orientation", (1.0, 0.0, 0.0, 0.0))
+        
         ps.pose.position.x = float(pos[0])
         ps.pose.position.y = float(pos[1])
         ps.pose.position.z = float(pos[2])
@@ -89,10 +128,10 @@ class SlamNode(Node):
         self._pose_pub.publish(ps)
 
     def _publish_map_points_placeholder(self) -> None:
-        # Placeholder publisher for map points; replace with custom msg type later.
+        """Publish map points count as placeholder."""
         mp = self._manager.get_map_points()
         payload = String()
-        payload.data = f"map_points_count={len(mp)}"  # TODO: define proper message
+        payload.data = f"map_points_count={len(mp)}"
         self._map_points_pub.publish(payload)
 
 
