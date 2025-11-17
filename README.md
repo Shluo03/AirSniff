@@ -1,4 +1,4 @@
-# System Architecture - Drone vSLAM + Wi-Fi RSSI Fusion
+# AirSniff System Architecture - Drone vSLAM + Wi-Fi RSSI Fusion
 
 ## System Architecture Diagram (Mermaid)
 
