@@ -204,5 +204,28 @@ flowchart LR
     C --> D[RF Digital Twin<br/>Optimization & Simulation]
 ```
 ### Autonomous Drone Navigation (Signal-Aware Planning)
+```mermaid
+sequenceDiagram
+    participant Drone
+    participant Map
+    participant Planner
+    
+    Drone->>Map: Live 3D points + RSSI
+    Map->>Planner: Signal-aware navigation graph
+    Planner->>Drone: Safe route recommendation
+```
 
+### Wireless Device Localization
+```mermaid
+graph TD
+    RSSI[Wi-Fi RSSI + Poses] --> Triangulation[RSSI-SLAM Estimation]
+    Triangulation --> AP[Estimated Device / AP Location]
+```
+
+### Smart Infrastructure Planning
+```mermaid
+flowchart TD
+    Map[AirSniff 3D + RF Map] --> ML[ML Optimization]
+    ML --> Plan[Recommended Sensor / Router Placement]
+```
   
