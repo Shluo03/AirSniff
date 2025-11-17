@@ -26,6 +26,9 @@ except Exception as e:  # pragma: no cover
         "PyTorch is required. Install Jetson-matched wheels for your JetPack."
     ) from e
 
+"""
+#UNCOMMENT THIS PART IF OLDER GPU (XFORMERS NOT SUPPORTED)
+
 import glob, os
 
 # Inject missing numpy.math before DA3 imports
@@ -64,6 +67,8 @@ sys.modules["xformers"] = fake_xformers
 sys.modules["xformers.ops"] = fake_ops
 
 print("[AUTO-PATCH] xformers replaced with FakeSwiGLU")
+
+"""
 
 try:
     from depth_anything_3.api import DepthAnything3  # type: ignore
