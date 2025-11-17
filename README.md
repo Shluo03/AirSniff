@@ -192,7 +192,15 @@ gantt
     Write Data: 110, 5ms
 ```
 
----
+## Future Implications of AirSniff
+AirSniff’s fusion of vSLAM + depth + wireless RF unlocks a new category of spatial intelligence systems. Below are visionary applications enabled by this architecture.
+
+# Indoor Wireless Heatmaps (RF Digital Twins)
+flowchart LR
+    A[Drone Flight<br/>3D + RSSI Data] --> B[RF Mapping Engine]
+    B --> C[3D Wi-Fi Heatmap<br/>Strong ↔ Weak]
+    C --> D[RF Digital Twin<br/>Optimization & Simulation]
+
 
 
 
