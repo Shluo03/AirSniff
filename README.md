@@ -1,6 +1,6 @@
 # AirSniff System Architecture - VIO + Wi-Fi RSSI Fusion
 
-## System Architecture Diagram (Mermaid)
+## System Architecture Diagram 
 
 ```mermaid
 flowchart TD
