@@ -72,7 +72,7 @@ graph LR
 generated a 3D representation of an office space from video by estimating camera poses, reconstructing surrounding geometry, and visualizing the camera’s trajectory as a rainbow-colored path, first prototype without mapping using WiFi data.
 
 ![Demo - 3D reconstruction](demo1.gif)
-generated a 3D representation of an office space from video by estimating camera poses, reconstructing surrounding geometry, and visualizing the camera’s trajectory as a rainbow-colored path, with mapping using WiFi data.
+generated a 3D representation of an office space from video by estimating camera poses, reconstructing surrounding geometry, and visualizing the camera’s trajectory as a rainbow-colored path, while mapping camera positions with WiFi signal strength, darker color- strong signal, vice versa.
 
 ## Data Flow Sequence
 
