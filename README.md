@@ -197,10 +197,11 @@ AirSniff’s fusion of vSLAM + depth + wireless RF unlocks a new category of spa
 
 # Indoor Wireless Heatmaps (RF Digital Twins)
 flowchart LR
+```mermaid
     A[Drone Flight<br/>3D + RSSI Data] --> B[RF Mapping Engine]
     B --> C[3D Wi-Fi Heatmap<br/>Strong ↔ Weak]
     C --> D[RF Digital Twin<br/>Optimization & Simulation]
-
+```
 
 
 
