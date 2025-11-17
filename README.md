@@ -193,7 +193,7 @@ gantt
 ```
 
 ## Future Implications of AirSniff
-AirSniff’s fusion of vSLAM + depth + wireless RF unlocks a new category of spatial intelligence systems. Below are visionary applications enabled by this architecture.
+AirSniff’s fusion of VIO + depth + wireless RF unlocks a new category of spatial intelligence systems. Below are visionary applications enabled by this architecture.
 
 ### Indoor Wireless Heatmaps (RF Digital Twins)
 
