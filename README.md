@@ -1,1 +1,231 @@
-# AirSniff
+# AirSniff System Architecture - VIO + Wi-Fi RSSI Fusion
+
+## System Architecture Diagram (Mermaid)
+
+```mermaid
+flowchart TD
+    Camera[📷 Monocular Camera & Flight Controller IMU - ] --> VIO[VIO<br/>Pose + Map]
+    Camera --> Depth[Depth Anything V3<br/>Depth Estimation]
+    
+    VIO -->| | Depth
+    VIO -->| | Logger[Fusion Logger<br/>Collects Pose + Depth + RSSI]
+    
+    Depth -->|/depth/image<br/>/depth/cloud| Recon[3D Reconstruction Fusion<br/>Combines pose + depth]
+    
+    Recon -->|/reconstruction/points| Logger
+    
+    WiFi[📶 Wi-Fi Interface - wlan0] --> Monitor[wifi_monitor]
+    Monitor -->|/wifi/rssi| Logger
+    
+    Logger -->|logs/fused_data_*.csv| Final[Final 3D Reconstruction<br/>Post-processing]
+    Recon -->|reconstruction data| Final
+    
+   
+    Final --> Output[logs/wifi_map_model_*.glb]
+   
+    
+    style Camera fill:#e1f5ff
+    
+    style Depth fill:#e1ffe1
+    style Recon fill:#fff5e1
+    style WiFi fill:#e1f5ff
+    style Monitor fill:#e1e1ff
+    style Logger fill:#ffe1ff
+    style Final fill:#ffb3ba
+   
+```
+
+## Detailed Component Flow
+
+```mermaid
+graph LR
+    subgraph Jetson Drone
+        subgraph Input
+            A[Camera] --> B[VIO]
+           
+            A --> C[Depth Anything V3]
+            D[Wi-Fi wlan0] --> E[wifi_monitor]
+        end
+        
+        subgraph Processing
+            B -->|pose| C
+            B -->|pose| F[Fusion Logger]
+            C -->|depth| G[3D Reconstruction<br/>Fusion]
+            G -->|points| F
+            E -->|rssi| F
+        end
+        
+        subgraph Output
+            F --> H[CSV Logs]
+            G --> I[Point Clouds]
+            H --> J[Final 3D<br/>Reconstruction]
+            I --> J
+            J --> K[GLB Files]
+            
+        end
+    end
+```
+
+## Demo
+
+![Demo - 3D reconstruction](demo.gif)
+generated a 3D representation of an office space from video by estimating camera poses, reconstructing surrounding geometry, and visualizing the camera’s trajectory as a rainbow-colored path, first prototype without mapping using WiFi data.
+
+![Demo - 3D reconstruction](demo1.gif)
+generated a 3D representation of an office space from video by estimating camera poses, reconstructing surrounding geometry, and visualizing the camera’s trajectory as a rainbow-colored path, while mapping camera positions with WiFi signal strength, darker color- strong signal, vice versa.
+
+## Data Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant C as Camera
+    participant S as VIO
+    participant D as Depth Anything V3
+    participant R as 3D Recon Fusion
+    participant W as wifi_monitor
+    participant L as Fusion Logger
+    participant F as Final 3D Recon
+    
+    C->>S: image frames
+    C->>D: image frames
+    S->>D: pose for alignment
+    S->>L: pose data
+    D->>R: depth point cloud
+    S->>R: pose for transform
+    R->>L: global points
+    W->>L: RSSI readings
+    
+    Note over L: Time-sync all data
+    L->>F: fused_data.csv
+    R->>F: reconstruction.ply
+    
+    F->>F: Post-process
+    F-->>C: final outputs
+```
+
+## Component Responsibilities
+
+```mermaid
+mindmap
+  root((Drone System))
+    VIO
+      Camera pose estimation
+      Sparse feature map
+      Provides pose to Depth
+      Sends pose to Logger
+    Depth Anything V3
+      Monocular depth estimation
+      Generates depth maps
+      Creates 3D point clouds
+    3D Reconstruction Fusion
+      Transform to world frame
+      Accumulate points over time
+      Publish global point cloud
+    wifi_monitor
+      Poll Wi-Fi RSSI
+      Publish signal strength
+    Fusion Logger
+      Collect all data streams
+      Time-synchronize data
+      Write CSV logs
+      Store point clouds
+    Final 3D Reconstruction
+      Post-process collected data
+      Map RSSI to 3D coordinates
+      Generate colored point clouds
+      Create final outputs
+```
+
+## System States
+
+```mermaid
+stateDiagram-v2
+    [*] --> Initialization
+    Initialization --> Calibrating: Load models & configs
+    Calibrating --> Ready: All systems OK
+    
+    Ready --> Running: Start flight
+    Running --> Tracking: Camera & VIO active
+    Tracking --> Mapping: Building 3D map
+    Mapping --> Logging: Recording data
+    
+    Logging --> Tracking: Continue flight
+    Logging --> Stopped: End flight
+    
+    Stopped --> Processing: Post-processing
+    Processing --> Complete: Generate outputs
+    Complete --> [*]
+    
+    Tracking --> Lost: Tracking failure
+    Lost --> Recovering: Re-initialize
+    Recovering --> Tracking: Success
+    Recovering --> Error: Failed
+    Error --> [*]
+```
+
+
+
+## Performance Pipeline
+
+```mermaid
+gantt
+    title Processing Timeline (per frame)
+    dateFormat X
+    axisFormat %L ms
+    
+    section Camera
+    Image Capture: 0, 33ms
+    
+    section VIO
+    Feature Extract: 5, 20ms
+    Pose Estimate: 25, 15ms
+    
+    section Depth V3
+    Depth Inference: 10, 80ms
+    Point Cloud Gen: 90, 10ms
+    
+    section 3D Fusion
+    Transform Points: 100, 5ms
+    Accumulate: 105, 5ms
+    
+    section Logging
+    Write Data: 110, 5ms
+```
+
+## Future Implications of AirSniff
+AirSniff’s fusion of VIO + depth + wireless RF unlocks a new category of spatial intelligence systems. Below are visionary applications enabled by this architecture.
+
+### Indoor Wireless Heatmaps (RF Digital Twins)
+
+```mermaid
+flowchart LR
+    A[Drone Flight<br/>3D + RSSI Data] --> B[RF Mapping Engine]
+    B --> C[3D Wi-Fi Heatmap<br/>Strong ↔ Weak]
+    C --> D[RF Digital Twin<br/>Optimization & Simulation]
+```
+### Autonomous Drone Navigation (Signal-Aware Planning)
+```mermaid
+sequenceDiagram
+    participant Drone
+    participant Map
+    participant Planner
+    
+    Drone->>Map: Live 3D points + RSSI
+    Map->>Planner: Signal-aware navigation graph
+    Planner->>Drone: Safe route recommendation
+```
+
+### Wireless Device Localization
+```mermaid
+graph TD
+    RSSI[Wi-Fi RSSI + Poses] --> Triangulation[RSSI-SLAM Estimation]
+    Triangulation --> AP[Estimated Device / AP Location]
+```
+
+### Smart Infrastructure Planning
+```mermaid
+flowchart TD
+    Map[AirSniff 3D + RF Map] --> ML[ML Optimization]
+    ML --> Plan[Recommended Sensor / Router Placement]
+```
+  
