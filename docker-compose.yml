@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  airsniff:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airsniff:latest
+    container_name: airsniff-system
+
+    # Privileged mode required for WiFi adapter access
+    privileged: true
+
+    # Network mode host for WiFi monitor mode
+    network_mode: host
+
+    # Mount volumes
+    volumes:
+      # Mount the workspace for development
+      - ./ros2_ws:/workspace/ros2_ws
+      - ./config:/workspace/config
+      - ./launch:/workspace/launch
+      # Mount logs directory to persist data
+      - ./logs:/workspace/logs
+      # Mount video output
+      - ./output:/workspace/output
+
+    # Device access for WiFi adapter
+    devices:
+      - /dev/net/tun:/dev/net/tun
+
+    # Environment variables
+    environment:
+      - ROS_DOMAIN_ID=0
+      - ROS_LOCALHOST_ONLY=0
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+
+    # Keep container running
+    stdin_open: true
+    tty: true
+
+    # Command to run on start
+    command: /bin/bash
+
+    # Restart policy
+    restart: unless-stopped
+
+# Optional: Add a separate service for visualization
+  # rviz:
+  #   image: airsniff:latest
+  #   container_name: airsniff-rviz
+  #   network_mode: host
+  #   environment:
+  #     - DISPLAY=${DISPLAY}
+  #     - QT_X11_NO_MITSHM=1
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  #   command: ros2 run rviz2 rviz2
+  #   depends_on:
+  #     - airsniff

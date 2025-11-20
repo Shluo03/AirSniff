@@ -1,0 +1,47 @@
+# Git files
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# ROS2 build artifacts
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Logs and output files
+logs/
+*.log
+*.csv
+*.ply
+*.glb
+*.mp4
+*.avi
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation (optional - include if needed)
+*.md
+demo.gif
+demo1.gif
+
+# Temporary files
+*.tmp
+*.bak
+.claude/
