@@ -1,0 +1,13 @@
+wifi_scanner_node:
+  ros__parameters:
+    # Hardware Configuration
+    interface: "wlP1p1s0"           # WiFi adapter interface name
+    
+    # Scanning Parameters
+    scan_method: "iwlist"            # Options: "iwlist" or "nmcli"
+    scan_interval: 2.0               # Seconds between scans
+    
+    # Data Filtering
+    min_rssi: -90                    # Minimum RSSI to include (dBm)
+    max_rssi: -20                    # Maximum RSSI to include (dBm)
+

@@ -1,0 +1,15 @@
+vio_node:
+  ros__parameters:
+    # IMU Configuration
+    imu_port: "/dev/serial/by-id/usb-CubePilot_CubeOrange+_250048000D51333233343437-if00"
+    imu_baud: 115200
+    
+    # Camera Configuration
+    camera_sensor_id: 0
+    camera_width: 640
+    camera_height: 480
+    camera_fps: 30
+    
+    # VIO Parameters
+    focal_length: 512.0  # Approximate focal length in pixels (calibrate for your camera)
+

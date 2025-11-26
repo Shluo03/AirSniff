@@ -1,0 +1,44 @@
+mock_vio_node:
+  ros__parameters:
+    # Publishing Rate
+    publish_rate: 30.0  # Hz - how often to publish pose (30 Hz = 30 times per second)
+    
+    # Motion Pattern
+    # Options: "hover", "line", "circle", "square", "figure8"
+    motion_pattern: "square"
+    
+    # Motion Parameters
+    motion_speed: 0.5    # meters per second
+    motion_scale: 5.0    # size of pattern in meters
+    
+    # Starting Position
+    start_x: 0.0         # meters
+    start_y: 0.0         # meters
+    start_z: 1.5         # meters (typical drone height)
+
+# ===== PRESET CONFIGURATIONS =====
+#
+# Hovering (stationary):
+#   motion_pattern: "hover"
+#   motion_speed: 0.0
+#
+# Walking Speed (slow line):
+#   motion_pattern: "line"
+#   motion_speed: 1.0
+#   motion_scale: 10.0
+#
+# Small Circle (indoor scanning):
+#   motion_pattern: "circle"
+#   motion_speed: 0.3
+#   motion_scale: 3.0
+#
+# Large Square (building perimeter):
+#   motion_pattern: "square"
+#   motion_speed: 0.5
+#   motion_scale: 10.0
+#
+# Figure-8 (complex pattern):
+#   motion_pattern: "figure8"
+#   motion_speed: 0.4
+#   motion_scale: 5.0
+

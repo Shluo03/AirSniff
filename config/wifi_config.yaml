@@ -1,11 +1,24 @@
-# File: config/wifi_config.yaml
-# Placeholder Wi‑Fi monitoring configuration
-
-interface: wlan0           # Wi‑Fi interface name on Jetson
-poll_interval_sec: 1.0     # Timer interval for RSSI polling
-
-targets:
-  # Optional filters; leave empty to log all visible networks
-  ssids: []                # e.g., ["MySSID", "MeshNet"]
-  bssids: []               # e.g., ["00:11:22:33:44:55"]
+# WiFi Scanner Configuration
+wifi_scanner:
+  # Hardware Configuration
+  interface: "wlP1p1s0"           # WiFi adapter interface name
+  
+  # Scanning Parameters
+  scan_method: "iwlist"            # Options: "iwlist" or "nmcli"
+  scan_interval: 1.5               # Seconds between scans (float)
+  
+  # Runtime Mode
+  continuous: true                 # true = run until Ctrl+C, false = timed run
+  duration: 30                     # Seconds to run (only if continuous: false)
+  
+  # Output Configuration
+  output:
+    console: true                  # Print to terminal
+    file: false                    # Save to file
+    file_path: "logs/wifi_scans.csv"  # File path (if file: true)
+  
+  # Data Filtering (optional)
+  filters:
+    min_rssi: -90                  # Minimum RSSI to include (dBm)
+    max_rssi: -20                  # Maximum RSSI to include (dBm)
 
